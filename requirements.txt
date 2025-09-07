@@ -1,0 +1,6 @@
+streamlit
+pydantic
+rapidfuzz
+python-dateutil
+pyttsx3; sys_platform == "darwin" or sys_platform == "win32"
+pandas

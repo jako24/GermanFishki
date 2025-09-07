@@ -1,0 +1,11 @@
+[tool.ruff]
+line-length = 88
+select = ["E", "W", "F", "I", "UP", "C4", "B", "A", "T20"]
+ignore = ["E501"]
+
+[tool.ruff.per-file-ignores]
+"__init__.py" = ["F401"]
+"tests/*" = ["S101"]
+
+[tool.ruff.isort]
+known-first-party = ["fishki"]
