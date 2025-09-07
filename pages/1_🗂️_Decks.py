@@ -5,6 +5,10 @@ from fishki.ui import set_toast, toast_notifications
 
 st.set_page_config(page_title="Manage Decks", page_icon="🗂️", layout="wide")
 
+# Initialize data from CSV files into session state
+if 'decks_df' not in st.session_state or 'cards_df' not in st.session_state:
+    st.session_state.decks_df, st.session_state.cards_df = data_store.load_data()
+
 st.header("🗂️ Manage Decks and Cards")
 
 # Load data from session state
