@@ -2,13 +2,13 @@ import streamlit as st
 import random
 import time
 import pandas as pd
-from fishki import data_store, utils, audio
+from fishki import data_store, utils, audio, ui
 
 st.set_page_config(page_title="Quiz Yourself", page_icon="📝", layout="centered")
 
 # Initialize data from CSV files into session state
-if 'decks_df' not in st.session_state or 'cards_df' not in st.session_state:
-    st.session_state.decks_df, st.session_state.cards_df = data_store.load_data()
+if 'decks_df' not in st.session_state or 'cards_df' not in st.session_state or 'saved_words_df' not in st.session_state:
+    st.session_state.decks_df, st.session_state.cards_df, st.session_state.saved_words_df = data_store.load_data()
 
 st.header("📝 Quiz Yourself")
 
@@ -68,6 +68,14 @@ correct_answer = card['en'] if direction == "DE → EN" else card['de']
 def show_result(was_correct):
     if was_correct: st.success("Correct!")
     else: st.error(f"Incorrect. The correct answer is: **{correct_answer}**")
+    
+    # Add save word functionality
+    ui.quick_save_word_button(
+        german=card['de'], 
+        english=card['en'], 
+        context=card.get('example', ''), 
+        source="Quiz"
+    )
     
     time.sleep(1)
     st.session_state.quiz_idx += 1

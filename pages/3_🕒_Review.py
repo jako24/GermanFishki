@@ -7,8 +7,8 @@ from fishki.srs import grade_card
 st.set_page_config(page_title="Review Due Cards", page_icon="🕒", layout="centered")
 
 # Initialize data from CSV files into session state
-if 'decks_df' not in st.session_state or 'cards_df' not in st.session_state:
-    st.session_state.decks_df, st.session_state.cards_df = data_store.load_data()
+if 'decks_df' not in st.session_state or 'cards_df' not in st.session_state or 'saved_words_df' not in st.session_state:
+    st.session_state.decks_df, st.session_state.cards_df, st.session_state.saved_words_df = data_store.load_data()
 
 st.header("🕒 Review Due Cards")
 
@@ -82,6 +82,15 @@ if show_answer:
     if card.example: st.caption(f"Example: {card.example}")
     if card.notes: st.text(f"Notes: {card.notes}")
     
+    # Add save word functionality
+    ui.quick_save_word_button(
+        german=card.de, 
+        english=card.en, 
+        context=card.example, 
+        source="Review"
+    )
+    st.write("---")
+    
     grade = ui.grade_buttons()
     if grade > 0:
         grade_card(card, grade, date.today())
@@ -90,7 +99,7 @@ if show_answer:
         st.session_state.cards_df = data_store.update_card(
             cards_df, card.id, card.__dict__
         )
-        data_store.save_data(decks_df, st.session_state.cards_df)
+        data_store.save_data(decks_df, st.session_state.cards_df, st.session_state.saved_words_df)
         
         ui.set_toast(f"Next review in {card.interval_days} day(s).")
         st.session_state.review_idx += 1

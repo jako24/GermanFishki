@@ -1,13 +1,13 @@
 import streamlit as st
 from datetime import date, datetime
-from fishki import data_store
+from fishki import data_store, ui
 from fishki.srs import grade_card
 
 st.set_page_config(page_title="Learn New Cards", page_icon="📚", layout="centered")
 
 # Initialize data from CSV files into session state
-if 'decks_df' not in st.session_state or 'cards_df' not in st.session_state:
-    st.session_state.decks_df, st.session_state.cards_df = data_store.load_data()
+if 'decks_df' not in st.session_state or 'cards_df' not in st.session_state or 'saved_words_df' not in st.session_state:
+    st.session_state.decks_df, st.session_state.cards_df, st.session_state.saved_words_df = data_store.load_data()
 
 st.header("📚 Learn New Cards")
 
@@ -69,6 +69,15 @@ if show_answer:
     st.success(back)
     if card.example: st.caption(f"Example: {card.example}")
     if card.notes: st.text(f"Notes: {card.notes}")
+    
+    # Add save word functionality
+    ui.quick_save_word_button(
+        german=card.de, 
+        english=card.en, 
+        context=card.example, 
+        source="Learn"
+    )
+    st.write("---")
 
     col1, col2 = st.columns(2)
 
@@ -80,7 +89,7 @@ if show_answer:
         st.session_state.cards_df = data_store.update_card(
             cards_df, card.id, card.__dict__
         )
-        data_store.save_data(decks_df, st.session_state.cards_df)
+        data_store.save_data(decks_df, st.session_state.cards_df, st.session_state.saved_words_df)
         st.session_state.learn_idx += 1
         st.rerun()
 

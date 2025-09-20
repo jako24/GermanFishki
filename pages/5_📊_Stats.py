@@ -6,8 +6,8 @@ from fishki import data_store
 st.set_page_config(page_title="Statistics", page_icon="📊", layout="wide")
 
 # Initialize data from CSV files into session state
-if 'decks_df' not in st.session_state or 'cards_df' not in st.session_state:
-    st.session_state.decks_df, st.session_state.cards_df = data_store.load_data()
+if 'decks_df' not in st.session_state or 'cards_df' not in st.session_state or 'saved_words_df' not in st.session_state:
+    st.session_state.decks_df, st.session_state.cards_df, st.session_state.saved_words_df = data_store.load_data()
 
 st.header("📊 Statistics Dashboard")
 

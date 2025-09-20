@@ -6,10 +6,10 @@ from fishki.ui import set_toast, toast_notifications
 st.set_page_config(page_title="Manage Decks", page_icon="🗂️", layout="wide")
 
 # Initialize data from CSV files into session state
-if 'decks_df' not in st.session_state or 'cards_df' not in st.session_state:
-    st.session_state.decks_df, st.session_state.cards_df = data_store.load_data()
+if 'decks_df' not in st.session_state or 'cards_df' not in st.session_state or 'saved_words_df' not in st.session_state:
+    st.session_state.decks_df, st.session_state.cards_df, st.session_state.saved_words_df = data_store.load_data()
 
-st.header("🗂️ Manage Decks and Cards")
+st.header("Manage Decks and Cards")
 
 # Load data from session state
 decks_df = st.session_state.decks_df
@@ -38,7 +38,7 @@ with col2:
             if st.form_submit_button("Create Deck"):
                 if new_deck_name:
                     st.session_state.decks_df = data_store.add_deck(decks_df, new_deck_name, new_deck_desc)
-                    data_store.save_data(st.session_state.decks_df, cards_df)
+                    data_store.save_data(st.session_state.decks_df, cards_df, st.session_state.saved_words_df)
                     set_toast(f"Deck '{new_deck_name}' created!")
                     st.rerun()
                 else:
@@ -52,7 +52,7 @@ deck_name = deck_options.get(selected_deck_id, "Unknown")
 st.write(f"### Cards in '{deck_name}'")
 
 # Card Management
-if st.button("➕ Add New Card"):
+if st.button("Add New Card"):
     # Using a simple form in an expander instead of a modal dialog for simplicity
     with st.expander("Add a New Card", expanded=True):
         with st.form("new_card_form"):
@@ -69,7 +69,7 @@ if st.button("➕ Add New Card"):
                         "example": example, "tags": tags, "notes": notes
                     }
                     st.session_state.cards_df = data_store.add_card(cards_df, new_card_data)
-                    data_store.save_data(decks_df, st.session_state.cards_df)
+                    data_store.save_data(decks_df, st.session_state.cards_df, st.session_state.saved_words_df)
                     set_toast("Card added successfully.")
                     st.rerun()
                 else:
@@ -79,7 +79,7 @@ if st.button("➕ Add New Card"):
 cards = data_store.get_cards(cards_df, deck_id=selected_deck_id)
 if cards:
     display_df = pd.DataFrame(cards)
-    st.dataframe(display_df[['de', 'en', 'example', 'tags', 'box', 'due_date']], width='stretch')
+    st.dataframe(display_df[['de', 'en', 'example', 'tags', 'box', 'due_date']], use_container_width=True)
 else:
     st.write("No cards in this deck yet.")
 
@@ -91,7 +91,7 @@ with c1:
     if st.button("🗑️ Delete Current Deck", type="primary"):
         decks_df, cards_df = data_store.delete_deck(decks_df, cards_df, selected_deck_id)
         st.session_state.decks_df, st.session_state.cards_df = decks_df, cards_df
-        data_store.save_data(decks_df, cards_df)
+        data_store.save_data(decks_df, cards_df, st.session_state.saved_words_df)
         set_toast(f"Deck '{deck_name}' deleted.", icon="🗑️")
         st.rerun()
 
